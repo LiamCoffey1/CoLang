@@ -1,6 +1,7 @@
 # CoLang
 
 TODO:
+- Formalize grammar for the language
 - Code input options --> load file and multiple line input from console (currently single)
 - Token generator needs pattern matching (regex)... abstract from string references to good token descriptions... token visitor for syntax tree
 - Types (duck for the moment, only string and int recognizable)
@@ -12,3 +13,10 @@ FUTURE:
 - Variable Scope based on block
 - functions
 - Lists
+
+GRAMMAR:
+B := S | SB
+S := A | IF | PRINT
+A := id AssOpp E
+E := id | value | E BinOpp E
+IF := if E { B }
