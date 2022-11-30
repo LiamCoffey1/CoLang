@@ -1,6 +1,6 @@
 # CoLang
 
-TODO:
+### TODO:
 - Formalize grammar for the language
 - Code input options --> load file and multiple line input from console (currently single)
 - Token generator needs pattern matching (regex)... abstract from string references to good token descriptions... token visitor for syntax tree
@@ -9,14 +9,14 @@ TODO:
 - Condition statements should use expressions that evaluate to booleans (only supports (id | value) == (id | value))... need comparison operators 
 - Parsing for else statements
 
-FUTURE:
+### FUTURE:
 - Variable Scope based on block
 - functions
 - Lists
 
-GRAMMAR:
-B := S | SB
-S := A | IF | PRINT
-A := id AssOpp E
-E := id | value | E BinOpp E
-IF := if E { B }
+### GRAMMAR:
+- B := S | SB
+- S := A | IF | PRINT
+- A := id AssOpp E
+- E := id | value | E BinOpp E
+- IF := if E { B }
