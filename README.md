@@ -8,6 +8,8 @@
 - Expressions only support E => (id | value) + (id | value).. needs to be able to parse expressions on either side aswell... so E => E | E BinOp E | Id | Value
 - Condition statements should use expressions that evaluate to booleans (only supports (id | value) == (id | value))... need comparison operators 
 - Parsing for else statements
+- Verification of Syntax Tree
+- Optimization of Syntax Tree
 
 ### FUTURE:
 - Variable Scope based on block
