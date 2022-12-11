@@ -1,4 +1,4 @@
-package colang.lexicalAnalysis;
+package colang.interperter.Tokenizer;
 
 public class TokenNode {
     public String token;

@@ -1,6 +1,14 @@
-package colang.lexicalAnalysis;
+package colang.interperter.Tokenizer.implementations;
 
-public class Lexer {
+import colang.interperter.Tokenizer.TokenNode;
+import colang.interperter.Tokenizer.Tokenizer;
+
+public class CLTokenizer implements Tokenizer {
+
+    @Override
+    public TokenNode tokenize(String token) {
+        return createTokenList(token);
+    }
 
     public static TokenNode createTokenList(String un_code) {
         TokenNode list = new TokenNode("block", null);
@@ -22,7 +30,7 @@ public class Lexer {
                     list = insertToken(list, current_token);
                     current_token = "";
                 }
-            } else if (c == ';' || c == '(' || c == ')' ||  c == '{' ||  c == '}' ||  c == '+') {
+            } else if (c == ';' || c == ',' || c == '(' || c == ')' ||  c == '{' ||  c == '}') {
                 if (current_token.length() > 0) {
                     list = insertToken(list, current_token);
                 }
@@ -46,5 +54,5 @@ public class Lexer {
         temp.next = new TokenNode(val, null);
         return list;
     }
-
+    
 }

@@ -2,21 +2,29 @@ package colang;
 
 import java.util.Scanner;
 
-import colang.codeGenerator.CodeGenerator;
-import colang.lexicalAnalysis.Lexer;
-import colang.lexicalAnalysis.TokenNode;
-import colang.semanticAnalysis.SyntaxTreeGenerator;
-import colang.semanticAnalysis.nodes.Nodes.BlockNode;
+import colang.interperter.CodeInterperter;
+import colang.interperter.CodeExcecutor.CodeExcecutor;
+import colang.interperter.CodeExcecutor.implementations.CLCodeExecutor;
+import colang.interperter.CodeOptimizer.CodeOptimzer;
+import colang.interperter.CodeOptimizer.implementations.CLCodeOptimizer;
+import colang.interperter.SyntaxTreeGenerator.SyntaxTreeGenerator;
+import colang.interperter.SyntaxTreeGenerator.implementations.CLSyntaxTreeGenerator;
 
 public class App {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
+        SyntaxTreeGenerator treeGenerator = new CLSyntaxTreeGenerator();
+        CodeOptimzer optimizer = new CLCodeOptimizer();
+        CodeExcecutor excecutor = new CLCodeExecutor();
+        CodeInterperter interperter = new CodeInterperter(treeGenerator, optimizer, excecutor);
         while (sc.hasNextLine()) {
             String code = sc.nextLine();
-            TokenNode token_list_root = Lexer.createTokenList(code);
-            BlockNode tree = new SyntaxTreeGenerator(token_list_root).createBlock();
-            new CodeGenerator().runCode(tree);
+            try {
+                interperter.interpert(code);
+            } catch (Exception e) {
+                continue;
+            }
         }
         sc.close();
     }
