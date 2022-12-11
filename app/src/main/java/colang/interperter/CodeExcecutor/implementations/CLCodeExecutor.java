@@ -2,7 +2,7 @@ package colang.interperter.CodeExcecutor.implementations;
 
 import colang.interperter.CodeExcecutor.CodeExcecutor;
 import colang.interperter.SyntaxTree.SyntaxTree;
-import colang.interperter.SyntaxTree.SyntaxTreeVisitor.implementations.CodeRunVisitor;
+import colang.interperter.SyntaxTreeVisitor.implementations.CodeRunVisitor;
 
 public class CLCodeExecutor implements CodeExcecutor {
     @Override

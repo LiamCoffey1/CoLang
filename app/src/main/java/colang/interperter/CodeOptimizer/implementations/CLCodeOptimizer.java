@@ -2,7 +2,7 @@ package colang.interperter.CodeOptimizer.implementations;
 
 import colang.interperter.CodeOptimizer.CodeOptimzer;
 import colang.interperter.SyntaxTree.SyntaxTree;
-import colang.interperter.SyntaxTree.SyntaxTreeVisitor.implementations.OptimizerVisitor;
+import colang.interperter.SyntaxTreeVisitor.implementations.OptimizerVisitor;
 
 public class CLCodeOptimizer implements CodeOptimzer {
 

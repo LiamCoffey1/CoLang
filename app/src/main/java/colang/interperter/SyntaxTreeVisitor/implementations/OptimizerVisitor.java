@@ -1,7 +1,7 @@
-package colang.interperter.SyntaxTree.SyntaxTreeVisitor.implementations;
+package colang.interperter.SyntaxTreeVisitor.implementations;
 
 import colang.interperter.SyntaxTree.SyntaxTreeNode.implementations.CLNodes.*;
-import colang.interperter.SyntaxTree.SyntaxTreeVisitor.SyntaxTreeVisitor;
+import colang.interperter.SyntaxTreeVisitor.SyntaxTreeVisitor;
 
 public class OptimizerVisitor implements SyntaxTreeVisitor {
 

@@ -1,8 +1,8 @@
-package colang.interperter.SyntaxTree.SyntaxTreeVisitor.implementations;
+package colang.interperter.SyntaxTreeVisitor.implementations;
 
-import colang.SymbolTable;
+import colang.interperter.RuntimeMemory.SymbolTable;
 import colang.interperter.SyntaxTree.SyntaxTreeNode.implementations.CLNodes.*;
-import colang.interperter.SyntaxTree.SyntaxTreeVisitor.SyntaxTreeVisitor;
+import colang.interperter.SyntaxTreeVisitor.SyntaxTreeVisitor;
 import colang.logging.Logger;
 
 public class CodeRunVisitor implements SyntaxTreeVisitor {
@@ -15,7 +15,6 @@ public class CodeRunVisitor implements SyntaxTreeVisitor {
 
     @Override
     public void visit(AssignNode assignNode) {
-        Object value = assignNode.calculate();
         SymbolTable.getSymbolTable().put(assignNode.identifier, assignNode.calculate());
     }
 
