@@ -8,11 +8,14 @@ import colang.interperter.SyntaxTree.SyntaxTreeNode.implementations.CLNodes.FunN
 
 public class SymbolTable {
     public static HashMap<String, FunNode> fun_map = new HashMap<String, FunNode>();
-    private static SymbolTable instance;
     private Deque<Frame> frames = new ArrayDeque<Frame>();
-
+    private static SymbolTable instance = null;
+    
     public static SymbolTable getInstance() {
-        return instance == null ? new SymbolTable() : instance;
+        if (instance == null) {
+            instance = new SymbolTable();
+        }
+        return instance;
     }
     private SymbolTable() {}
 
