@@ -3,18 +3,16 @@
 ### TODO:
 - Formalize grammar for the language
 - Code input options --> load file and multiple line input from console (currently single)
-- Token generator needs pattern matching (regex)... abstract from string references to good token descriptions... token visitor for syntax tree
+- Token generator... abstract from string references to good token descriptions... 
 - Types (duck for the moment, only string and int recognizable)
-- Expressions only support E => (id | value) + (id | value).. needs to be able to parse expressions on either side aswell... so E => E | E BinOp E | Id | Value
-- Condition statements should use expressions that evaluate to booleans (only supports (id | value) == (id | value))... need comparison operators 
 - Parsing for else statements
-- Verification of Syntax Tree
-- Optimization of Syntax Tree
+- Verification of Syntax Tree - Only partial expection currently
+- Optimization of Syntax Tree - Only constant folding currently
 
 ### FUTURE:
 - Variable Scope based on block
-- functions
-- Lists
+- functions - return types and usage within expressions
+- Data structures
 
 ### GRAMMAR:
 - B := S | SB
