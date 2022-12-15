@@ -11,19 +11,19 @@ import colang.interperter.SyntaxTreeGenerator.SyntaxTreeGenerator;
 import colang.interperter.SyntaxTreeGenerator.implementations.CLSyntaxTreeGenerator;
 
 public class App {
-
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         SyntaxTreeGenerator treeGenerator = new CLSyntaxTreeGenerator();
         CodeOptimzer optimizer = new CLCodeOptimizer();
         CodeExcecutor excecutor = new CLCodeExecutor();
         CodeInterperter interperter = new CodeInterperter(treeGenerator, optimizer, excecutor);
+        String code;
         while (sc.hasNextLine()) {
-            String code = sc.nextLine();
+            code = sc.nextLine();
             try {
                 interperter.interpert(code);
             } catch (Exception e) {
-                continue;
+                e.printStackTrace();
             }
         }
         sc.close();

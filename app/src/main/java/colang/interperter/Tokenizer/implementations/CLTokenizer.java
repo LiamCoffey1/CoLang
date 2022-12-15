@@ -16,8 +16,8 @@ public class CLTokenizer implements Tokenizer {
         String code = un_code.concat(" ");
         boolean parsing_string = false;
         for (char c : code.toCharArray()) {
-            if(parsing_string) {
-                if(c == '"') {
+            if (parsing_string) {
+                if (c == '"') {
                     parsing_string = false;
                     current_token += c;
                     list = insertToken(list, current_token);

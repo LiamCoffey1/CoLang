@@ -3,9 +3,9 @@ package colang.interperter.SyntaxTree.SyntaxTreeNode.implementations;
 import java.util.ArrayList;
 import java.util.List;
 
-import colang.SymbolTable;
+import colang.interperter.RuntimeMemory.SymbolTable;
 import colang.interperter.SyntaxTree.SyntaxTreeNode.SyntaxTreeNode;
-import colang.interperter.SyntaxTree.SyntaxTreeVisitor.SyntaxTreeVisitor;
+import colang.interperter.SyntaxTreeVisitor.SyntaxTreeVisitor;
 import colang.logging.Logger;
 
 public class CLNodes {
@@ -27,21 +27,21 @@ public class CLNodes {
         public ExpressionNode value_expression;
 
         public Object calculate() {
-            if(operator.equals("=")) {
+            if (operator.equals("=")) {
                 return value_expression.calculate();
             }
-            Object expr_value = SymbolTable.getSymbolTable().get(identifier);
-            if(expr_value == null) {
+            Object expr_value = SymbolTable.getInstance().getVariable(identifier);
+            if (expr_value == null) {
                 Logger.logError("Invalid var: " + identifier);
             }
             int val = Integer.parseInt(expr_value.toString());
-            if(operator.equals("+=")) {
+            if (operator.equals("+=")) {
                 return val +=  Integer.parseInt(value_expression.calculate().toString());
-            } else if(operator.equals("*=")) {
+            } else if (operator.equals("*=")) {
                 return val *=  Integer.parseInt(value_expression.calculate().toString());
-            } else if(operator.equals("/=")) {
+            } else if (operator.equals("/=")) {
                 return val /=  Integer.parseInt(value_expression.calculate().toString());
-            } else if(operator.equals("-=")) {
+            } else if (operator.equals("-=")) {
                 return val -=  Integer.parseInt(value_expression.calculate().toString());
             }
             return null;
@@ -54,12 +54,10 @@ public class CLNodes {
 
     public static class PrintNode extends StatementNode {
         public ExpressionNode print_expression;
+        
         @Override
         public void accept(SyntaxTreeVisitor v) { 
             v.visit(this);
-        }
-        public PrintNode createNode() { 
-            return this;
         }
     }
 
@@ -120,20 +118,20 @@ public class CLNodes {
 
         @Override
         public Object calculate() {
-            if(operator.equals("&&") || operator.equals("||")) {
+            if (operator.equals("&&") || operator.equals("||")) {
                 boolean leftb = Boolean.parseBoolean(left.calculate().toString());
                 boolean rightb = Boolean.parseBoolean(right.calculate().toString());
                 return operator.equals("&&") ? leftb && rightb :leftb || rightb;
             }
             int lefti = Integer.parseInt(left.calculate().toString());
             int righti = Integer.parseInt(right.calculate().toString());
-            if(operator.equals("+")) {
+            if (operator.equals("+")) {
                 return lefti + righti;
-            } else if(operator.equals("*")) {
+            } else if (operator.equals("*")) {
                 return lefti * righti;
-            } else if(operator.equals("/")) {
+            } else if (operator.equals("/")) {
                 return lefti / righti;
-            } else if(operator.equals("-")) {
+            } else if (operator.equals("-")) {
                 return lefti - righti;
             }
             return null;
@@ -149,15 +147,15 @@ public class CLNodes {
         public Object calculate() {
             int lefti = Integer.parseInt(left.calculate().toString());
             int righti = Integer.parseInt(right.calculate().toString());
-            if(operator.equals("==")) {
+            if (operator.equals("==")) {
                 return lefti == righti;
-            } else if(operator.equals(">")) {
+            } else if (operator.equals(">")) {
                 return lefti > righti;
-            } else if(operator.equals("<")) {
+            } else if (operator.equals("<")) {
                 return lefti < righti;
-            } else if(operator.equals(">=")) {
+            } else if (operator.equals(">=")) {
                 return lefti >= righti;
-            } else if(operator.equals("<=")) {
+            } else if (operator.equals("<=")) {
                 return lefti <= righti;
             }
             return null;
@@ -168,8 +166,7 @@ public class CLNodes {
         public Object value;
 
         @Override
-        public
-        Object calculate() {
+        public Object calculate() {
             return value;
         }
     }
@@ -179,8 +176,8 @@ public class CLNodes {
 
         @Override
         public Object calculate() {
-            Object val = SymbolTable.getSymbolTable().get(id);
-            if(val == null) {
+            Object val = SymbolTable.getInstance().getVariable(id);
+            if (val == null) {
                 Logger.logError("Invalid var: " + id);
                 val.toString();
             }

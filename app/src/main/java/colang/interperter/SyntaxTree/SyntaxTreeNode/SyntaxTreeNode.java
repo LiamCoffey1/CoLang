@@ -1,6 +1,6 @@
 package colang.interperter.SyntaxTree.SyntaxTreeNode;
 
-import colang.interperter.SyntaxTree.SyntaxTreeVisitor.SyntaxTreeVisitor;
+import colang.interperter.SyntaxTreeVisitor.SyntaxTreeVisitor;
 
 public interface SyntaxTreeNode {
     void accept(SyntaxTreeVisitor v);

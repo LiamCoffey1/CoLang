@@ -1,4 +1,4 @@
-package colang.interperter.SyntaxTree.SyntaxTreeVisitor;
+package colang.interperter.SyntaxTreeVisitor;
 
 import colang.interperter.SyntaxTree.SyntaxTreeNode.implementations.CLNodes.*;
 

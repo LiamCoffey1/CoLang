@@ -10,6 +10,7 @@ public abstract class SyntaxTreeGenerator {
     public SyntaxTree syntax_tree;
     protected abstract Tokenizer getTokenizer();
     protected abstract SyntaxTree createNodes();
+
     public SyntaxTree createTree(String code) {
         current_node = this.getTokenizer().tokenize(code);
         return createNodes();
@@ -31,7 +32,7 @@ public abstract class SyntaxTreeGenerator {
     }
 
     public void expect(String token) {
-        if(current_node == null || !current_node.token.equals(token)) {
+        if (current_node == null || !current_node.token.equals(token)) {
             String un_expected = current_node == null ? "EMPTY_STRING" : current_node.token;
             Logger.logError("Unexpected token: " + un_expected + ", expected: " + token);
         }
