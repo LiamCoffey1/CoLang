@@ -9,6 +9,47 @@
 - Data structures
 
 
+# Examples
+
+### Variables 
+ 
+    var testVar = 2
+    var array = [1, 2, 3, 4]
+    var stringVar = "Hello"
+    var boole = true && false
+    var inst = new Instance()
+    testVar = 5
+    stringVar = testVar.toString() + " <- testVar"
+    
+### Control 
+
+    while (i != 5) {
+        i += 1
+    }
+    if (true) {
+        print true
+    } else {
+        print false
+    }
+    foreach in array(value) {
+        print value
+    }
+    
+### Classes 
+
+    class NewClass {
+        let width = 0
+        init() {
+            width = 5
+        }
+        fun getWidth() {
+            return width
+        }
+    }
+    let inst = new NewClass() {
+        width = 10
+    }
+    print "Width: " + inst.getWidth().toString()
 
 # Grammar
 
