@@ -11,103 +11,110 @@
 
 # Examples
 
-### Variables 
- 
-    var testVar = 2
-    var array = [1, 2, 3, 4]
-    var stringVar = "Hello"
-    var boole = true && false
-    var inst = new Instance()
-    testVar = 5
-    stringVar = testVar.toString() + " <- testVar"
-    
-### Control 
 
-    while (i != 5) {
-        i += 1
-    }
-    if (true) {
-        print true
-    } else {
-        print false
-    }
-    foreach in array(value) {
-        print value
-    }
+### Variables 
+```ruby
+var testVar = 2
+var array = [1, 2, 3, 4]
+var stringVar = "Hello"
+var boole = true && false
+var inst = new Instance()
+testVar = 5
+stringVar = testVar.toString() + " <- testVar"
+```
     
+### Control
+
+```ruby
+while (i != 5) {
+    i += 1
+}
+if (true) {
+    print true
+} else {
+    print false
+}
+foreach in array(value) {
+    print value
+}
+```
+
 ### Classes 
 
-    class NewClass {
-        let width = 0
-        init() {
-            width = 5
-        }
-        fun getWidth() {
-            return width
-        }
+```ruby
+class NewClass {
+    let width = 0
+    init() {
+        width = 5
     }
-    let inst = new NewClass() {
-        width = 10
+    fun getWidth() {
+        return width
     }
-    print "Width: " + inst.getWidth().toString()
+}
+let inst = new NewClass() {
+    width = 10
+}
+print "Width: " + inst.getWidth().toString()
+```
 
 # Grammar
 
 **SYMBOLS**
-
-    <type> := string | number | boolean | void | any
-    <boolean_opps> := || | &&  
-    <add_ops> := + | -  
-    <mult_opps> := * | /  
-    <compare_opps> := == | >= | <= | > | < | !=  
-    <assignment_operator> := += | -= | *= | /= | =
+```ruby
+<type> := string | number | boolean | void | any
+<boolean_opps> := || | &&
+<add_ops> := + | -
+<mult_opps> := * | /
+<compare_opps> := == | >= | <= | > | < | !=
+<assignment_operator> := += | -= | *= | /= | =
+```
 
 **PROGRAM**
-
-    <program> ::= <block>
-    <block> ::= <statements>
-
+```ruby
+<program> ::= <block>
+<block> ::= <statements>
+```
 **STATMENTS**
+```ruby
+<statements> ::= <statement+>
+<statement> ::= <if_statement> 
+    | <assign_statement> 
+    | <while_statement> 
+    | <return_statement>
+    | <print_statement>
+    | <declare_statement>
+    | <function_call>
+<if_statement> ::= if <expression> <block> | if <expression> <block> else <block>
+<while_statement> ::= while <expression> <block>
+<return_statement> ::= return <expression>
+<print_statement> ::= print <expression>
+<assign_statement> ::= <identifier> <assignment_operator> <expression>
 
-    <statements> ::= <statement+>
-    <statement> ::= <if_statement> 
-        | <assign_statement> 
-        | <while_statement> 
-        | <return_statement>
-        | <print_statement>
-        | <declare_statement>
-        | <function_call>
-    <if_statement> ::= if <expression> <block> | if <expression> <block> else <block>
-    <while_statement> ::= while <expression> <block>
-    <return_statement> ::= return <expression>
-    <print_statement> ::= print <expression>
-    <assign_statement> ::= <identifier> <assignment_operator> <expression>
+<declare_statement> := <declare_variable_statement> | <declare_function_statement>
+<declare__variable_statement> ::= set <identifier> = <expression> || set <identifier>
+<declare_function_statement> ::= fun <fun_parameters> <block>
 
-    <declare_statement> := <declare_variable_statement> | <declare_function_statement>
-    <declare__variable_statement> ::= set <identifier> = <expression> || set <identifier>
-    <declare_function_statement> ::= fun <fun_parameters> <block>
+<function_call> ::= <identifier> <fun_parameters> 
+<fun_parameters> ::= ( <parameter+> )
+<parameter> ::= <parameter_variable>, | <parameter_variable>
+<parameter_variable> ::= <identifier> | <expression>
 
-    <function_call> ::= <identifier> <fun_parameters> 
-    <fun_parameters> ::= ( <parameter+> )
-    <parameter> ::= <parameter_variable>, | <parameter_variable>
-    <parameter_variable> ::= <identifier> | <expression>
+<class_def> ::= class <identifier> <class_body>
+<class_body> ::= { <declare_statement+> }
 
-    <class_def> ::= class <identifier> <class_body>
-    <class_body> ::= { <declare_statement+> }
-
-    <accessor> := <member_call> . <member_call> || <member_call>
-    <member_call> := <identifier> || <function_call>
-
+<accessor> := <member_call> . <member_call> || <member_call>
+<member_call> := <identifier> || <function_call>
+```
 **EPRESSIONS**
-
-    <expression> ::= <boolean> 
-    <boolean> ::= <compare> | <expression> <boolean_opps> <expression>
-    <compare> ::= <additive> | <expression> <compare_opps> <expression>
-    <additive> ::= <multiplitive> | <expression> <add_opps> <expression>
-    <multiplitive> := <primary> |  <expression> <mult_opps> <expression>
-    <primary> ::= <accessor>
-        | ( <expression> ) 
-        | !<expression>
-        | <constant> 
-
+```ruby
+<expression> ::= <boolean> 
+<boolean> ::= <compare> | <expression> <boolean_opps> <expression>
+<compare> ::= <additive> | <expression> <compare_opps> <expression>
+<additive> ::= <multiplitive> | <expression> <add_opps> <expression>
+<multiplitive> := <primary> |  <expression> <mult_opps> <expression>
+<primary> ::= <accessor>
+    | ( <expression> ) 
+    | !<expression>
+    | <constant> 
+```
 
