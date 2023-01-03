@@ -7,13 +7,15 @@ import colang.interperter.CodeExcecutor.CodeExcecutor;
 import colang.interperter.CodeExcecutor.implementations.CLCodeExecutor;
 import colang.interperter.CodeOptimizer.CodeOptimzer;
 import colang.interperter.CodeOptimizer.implementations.CLCodeOptimizer;
+import colang.interperter.Exception.CLException;
 import colang.interperter.SyntaxTreeGenerator.SyntaxTreeGenerator;
 import colang.interperter.SyntaxTreeGenerator.implementations.CLSyntaxTreeGenerator;
+import colang.logging.Logger;
 
 public class App {
 
     private static final  boolean DEBUG_MODE = true;
-    
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         SyntaxTreeGenerator treeGenerator = new CLSyntaxTreeGenerator();
@@ -33,6 +35,9 @@ public class App {
                 } else {
                     codeBuffer += line + " ";
                 }
+            } catch (CLException e) {
+                Logger.logError(e.getMessage());
+                codeBuffer = "";
             } catch (Exception e) {
                 if(DEBUG_MODE) {
                     e.printStackTrace();

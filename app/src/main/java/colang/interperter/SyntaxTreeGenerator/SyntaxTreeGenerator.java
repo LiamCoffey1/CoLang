@@ -1,10 +1,10 @@
 package colang.interperter.SyntaxTreeGenerator;
 
+import colang.interperter.Exception.implementations.UnexpectedTokenException;
 import colang.interperter.SyntaxTree.SyntaxTree;
 import colang.interperter.Tokenizer.TokenNode;
 import colang.interperter.Tokenizer.TokenType;
 import colang.interperter.Tokenizer.Tokenizer;
-import colang.logging.Logger;
 
 public abstract class SyntaxTreeGenerator {
     public TokenNode current_node;
@@ -35,7 +35,7 @@ public abstract class SyntaxTreeGenerator {
     public void expect(TokenType type) {
         if (current_node == null || current_node.type != type) {
             String un_expected = current_node == null ? "EMPTY_STRING" : current_node.token;
-            Logger.logError("Unexpected token: " + un_expected + ", expected: " + type.value);
+            throw new UnexpectedTokenException("Unexpected token: " + un_expected + ", expected: " + type.value);
         }
     }
 }

@@ -4,9 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
+import colang.interperter.Exception.implementations.MethodNotFoundException;
+import colang.interperter.Exception.implementations.VariableNotFoundException;
 import colang.interperter.LangObject.implementations.StringObject;
 import colang.interperter.Type.CLType;
-import colang.logging.Logger;
 
 public class LangObject {
     public CLType type;
@@ -18,7 +19,7 @@ public class LangObject {
     public LangObject call(String fun, List<LangObject> input) {
         Function<List<LangObject>, LangObject> function = functions.get(fun);
         if(function == null) {
-            Logger.logError("Invalid function: " + fun);
+            throw new MethodNotFoundException("Invalid function: " + fun);
         }
         return function.apply(input);
     }
@@ -26,7 +27,7 @@ public class LangObject {
     public LangObject property(String property) {
         LangObject prop = children.get(property);
         if(prop == null) {
-            Logger.logError("Invalid property: " + property);
+            throw new VariableNotFoundException("Invalid property: " + property);
         }
         return prop;
     }
@@ -43,7 +44,7 @@ public class LangObject {
     public void setProperty(String property, LangObject value) {
         LangObject prop = children.get(property);
         if(prop == null) {
-            Logger.logError("Invalid property: " + property);
+            throw new VariableNotFoundException("Invalid property: " + property);
         }
         children.put(property, value);
     }

@@ -3,6 +3,7 @@ package colang.interperter.SyntaxTree.SyntaxTreeNode.implementations;
 import java.util.ArrayList;
 import java.util.List;
 
+import colang.interperter.Exception.implementations.VariableNotFoundException;
 import colang.interperter.LangObject.LangObject;
 import colang.interperter.LangObject.implementations.ArrayObject;
 import colang.interperter.LangObject.implementations.ClassObject;
@@ -12,7 +13,6 @@ import colang.interperter.RuntimeMemory.SymbolTable;
 import colang.interperter.SyntaxTree.SyntaxTreeNode.SyntaxTreeNode;
 import colang.interperter.SyntaxTreeVisitor.SyntaxTreeVisitor;
 import colang.interperter.Type.CLType;
-import colang.logging.Logger;
 
 public class CLNodes {
     public static class BlockNode implements SyntaxTreeNode {
@@ -309,8 +309,7 @@ public class CLNodes {
         public LangObject calculate() {
             LangObject val = SymbolTable.getInstance().getVariable(id);
             if (val == null) {
-                Logger.logError("Invalid var: " + id);
-                val.toString();
+                throw new VariableNotFoundException("Invalid var: " + id);
             }
             return val;
         }
