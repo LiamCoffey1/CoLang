@@ -1,31 +1,81 @@
 # CoLang
 
 ### TODO:
-- Code input options --> load file and multiple line input from console (currently single)
-- Token generator... abstract from string references to good token descriptions... 
-- Types (duck for the moment, only string and int recognizable)
+- Code input options --> load file (currently single)
 - Verification of Syntax Tree - Only partial expection currently
 - Optimization of Syntax Tree - Only constant folding currently
 
 ### FUTURE:
-- functions - return types and usage within expressions
 - Data structures
 
-### GRAMMAR:
+
+# Examples
+
+
+### Variables 
+```ruby
+var testVar = 2
+var array = [1, 2, 3, 4]
+var stringVar = "Hello"
+var boole = true && false
+var inst = new Instance()
+testVar = 5
+stringVar = testVar.toString() + " <- testVar"
+```
+    
+### Control
+
+```ruby
+while (i != 5) {
+    i += 1
+}
+if (true) {
+    print true
+} else {
+    print false
+}
+foreach in array(value) {
+    print value
+}
+```
+
+### Classes 
+
+```ruby
+class NewClass {
+    let width = 0
+    init() {
+        width = 5
+    }
+    fun getWidth() {
+        return width
+    }
+}
+let inst = new NewClass() {
+    width = 10
+}
+print "Width: " + inst.getWidth().toString()
+```
+
+# Grammar
 
 **SYMBOLS**
+```ruby
 <type> := string | number | boolean | void | any
 <boolean_opps> := || | &&
 <add_ops> := + | -
 <mult_opps> := * | /
 <compare_opps> := == | >= | <= | > | < | !=
 <assignment_operator> := += | -= | *= | /= | =
+```
 
 **PROGRAM**
+```ruby
 <program> ::= <block>
 <block> ::= <statements>
-
+```
 **STATMENTS**
+```ruby
 <statements> ::= <statement+>
 <statement> ::= <if_statement> 
     | <assign_statement> 
@@ -54,8 +104,9 @@
 
 <accessor> := <member_call> . <member_call> || <member_call>
 <member_call> := <identifier> || <function_call>
-
+```
 **EPRESSIONS**
+```ruby
 <expression> ::= <boolean> 
 <boolean> ::= <compare> | <expression> <boolean_opps> <expression>
 <compare> ::= <additive> | <expression> <compare_opps> <expression>
@@ -65,5 +116,5 @@
     | ( <expression> ) 
     | !<expression>
     | <constant> 
-
+```
 
