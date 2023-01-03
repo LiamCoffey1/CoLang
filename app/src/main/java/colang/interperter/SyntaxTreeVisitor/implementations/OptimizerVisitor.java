@@ -21,12 +21,7 @@ public class OptimizerVisitor implements SyntaxTreeVisitor {
                 valueNode.value = expressionNode.calculate();
                 return valueNode;
             }
-        } else if(expressionNode instanceof CompareNode) {
-            CompareNode cmpNode = (CompareNode)expressionNode;
-            cmpNode.left = visit(cmpNode.left);
-            cmpNode.right = visit(cmpNode.right);
-            return cmpNode;
-        }
+        } 
         return expressionNode;
     }
 
@@ -61,5 +56,28 @@ public class OptimizerVisitor implements SyntaxTreeVisitor {
 
     @Override
     public void visit(FunCallNode funCallNode) {
+    }
+
+    @Override
+    public void visit(ExpressionStatement expressionStatement) {
+    }
+
+    @Override
+    public void visit(ForeachNode foreachNode) {
+    }
+
+    @Override
+    public void visit(ClassDefinitionNode classDefinitionNode) {
+        
+    }
+
+    @Override
+    public void visit(ReturnStatement returnStatement) {
+        
+    }
+
+    @Override
+    public void visit(VariableDeclarationNode variableDeclarationNode) {
+        
     }
 }

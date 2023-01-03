@@ -2,6 +2,7 @@ package colang.interperter.SyntaxTreeGenerator;
 
 import colang.interperter.SyntaxTree.SyntaxTree;
 import colang.interperter.Tokenizer.TokenNode;
+import colang.interperter.Tokenizer.TokenType;
 import colang.interperter.Tokenizer.Tokenizer;
 import colang.logging.Logger;
 
@@ -25,16 +26,16 @@ public abstract class SyntaxTreeGenerator {
         return temp;
     }
 
-    public TokenNode expectAndAdvance(String token) {
-        expect(token);
+    public TokenNode expectAndAdvance(TokenType type) {
+        expect(type);
         getNextToken();
         return current_node;
     }
 
-    public void expect(String token) {
-        if (current_node == null || !current_node.token.equals(token)) {
+    public void expect(TokenType type) {
+        if (current_node == null || current_node.type != type) {
             String un_expected = current_node == null ? "EMPTY_STRING" : current_node.token;
-            Logger.logError("Unexpected token: " + un_expected + ", expected: " + token);
+            Logger.logError("Unexpected token: " + un_expected + ", expected: " + type.value);
         }
     }
 }

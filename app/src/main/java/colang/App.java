@@ -11,19 +11,33 @@ import colang.interperter.SyntaxTreeGenerator.SyntaxTreeGenerator;
 import colang.interperter.SyntaxTreeGenerator.implementations.CLSyntaxTreeGenerator;
 
 public class App {
+
+    private static final  boolean DEBUG_MODE = true;
+    
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         SyntaxTreeGenerator treeGenerator = new CLSyntaxTreeGenerator();
         CodeOptimzer optimizer = new CLCodeOptimizer();
         CodeExcecutor excecutor = new CLCodeExecutor();
         CodeInterperter interperter = new CodeInterperter(treeGenerator, optimizer, excecutor);
-        String code;
+        String codeBuffer = "";
+        System.out.println("******* -- COLANG -- *********");
         while (sc.hasNextLine()) {
-            code = sc.nextLine();
+            String line = sc.nextLine();
             try {
-                interperter.interpert(code);
+                if(line.equals("/r")) {
+                    interperter.interpert(codeBuffer);
+                    codeBuffer = "";
+                } else if(line.equals("/c")) {
+                    codeBuffer = "";
+                } else {
+                    codeBuffer += line + " ";
+                }
             } catch (Exception e) {
-                e.printStackTrace();
+                if(DEBUG_MODE) {
+                    e.printStackTrace();
+                    codeBuffer = "";
+                }
             }
         }
         sc.close();

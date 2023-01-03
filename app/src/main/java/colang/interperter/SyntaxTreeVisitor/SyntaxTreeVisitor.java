@@ -11,6 +11,11 @@ public interface SyntaxTreeVisitor {
     public abstract void visit(FunNode funCallNode);
     public abstract void visit(FunCallNode funCallNode);
     public abstract ExpressionNode visit(ExpressionNode expressionNode);
+    public abstract void visit(ExpressionStatement expressionStatement);
+    public abstract void visit(ForeachNode foreachNode);
+    public abstract void visit(ClassDefinitionNode classDefinitionNode);
+    public abstract void visit(ReturnStatement returnStatement);
+    public abstract void visit(VariableDeclarationNode variableDeclarationNode);
 }
 
 
