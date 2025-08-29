@@ -44,6 +44,7 @@ public class BinaryOperations {
             }
             , stringConverter)
         );
+        
         putInMap("-", new BinaryOperation<Integer, Integer>(CLType.NUMBER, (left, right) -> left - right, numberConverter));
         putInMap("*", new BinaryOperation<Integer, Integer>(CLType.NUMBER, (left, right) -> left * right, numberConverter));
         putInMap("/", new BinaryOperation<Integer, Integer>(CLType.NUMBER, (left, right) -> left / right, numberConverter));

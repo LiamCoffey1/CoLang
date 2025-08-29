@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
 
+
 import colang.interperter.SyntaxTree.SyntaxTree;
 import colang.interperter.SyntaxTree.SyntaxTreeNode.implementations.CLNodes.*;
 import colang.interperter.SyntaxTreeGenerator.SyntaxTreeGenerator;
@@ -32,6 +33,7 @@ public class CLSyntaxTreeGenerator extends SyntaxTreeGenerator {
 
     private void initializeCreationMap() {
         statement_nodes_map.put(TokenType.CLASS, () -> createClass());
+        statement_nodes_map.put(TokenType.COMPONENT, () -> createComponent());
         statement_nodes_map.put(TokenType.PRINT, () -> createPrintNode());
         statement_nodes_map.put(TokenType.IF, () -> createIfBranch());
         statement_nodes_map.put(TokenType.WHILE, () -> createWhileBranch());
@@ -76,6 +78,28 @@ public class CLSyntaxTreeGenerator extends SyntaxTreeGenerator {
             }
             if (current_node.type == TokenType.CONSTRUCTOR) {
                 node.constructor = createConstructor();
+            }
+            getNextToken();
+        }
+        return node;
+    }
+
+    private ComponentDefinitionNode createComponent() {
+        ComponentDefinitionNode node = new ComponentDefinitionNode();
+        getNextToken();
+        node.className = current_node.token;
+        getNextToken();
+        getNextToken();
+        while (current_node.type != TokenType.RIGHT_CURLY) {
+            if (current_node.type == TokenType.FUN) {
+                node.functions.add(createFunBranch(node.className));
+            }
+            if (current_node.type == TokenType.VAR) {
+                node.variables.add((VariableDeclarationNode) createVariableDeclaration());
+            }
+            if (current_node.type == TokenType.VIEW) {
+                getNextToken();
+                node.xml = current_node.token;
             }
             getNextToken();
         }
@@ -245,6 +269,16 @@ public class CLSyntaxTreeGenerator extends SyntaxTreeGenerator {
         return node;
     }
 
+    private ExpressionNode createLamda() {
+        getNextToken();
+        expectAndAdvance(TokenType.LEFT_PAREN);
+        expectAndAdvance(TokenType.RIGHT_PAREN);
+        LamdaNode lamdaNode = new LamdaNode();
+        lamdaNode.body = createBlock();
+        getNextToken();
+        return lamdaNode;
+    }
+
     private ExpressionNode createNewInstance() {
         getNextToken();
         InstanceCreateNode instanceCreateNode = new InstanceCreateNode();
@@ -280,12 +314,27 @@ public class CLSyntaxTreeGenerator extends SyntaxTreeGenerator {
     }
 
     private ExpressionNode createExpression() {
-        if (current_node.type == TokenType.LEFT_BOX) {
-            return createArray();
+        switch(current_node.type) {
+            case LEFT_BOX:
+                return createArray();
+            case XML:
+                return createXML();
+            case NEW:
+                return createNewInstance();
+            case LAMDA:
+                return createLamda();
+            default:
+                return createBooleanExpression();
         }
-        if (current_node.type == TokenType.NEW) {
-            return createNewInstance();
-        }
+    }
+
+    private ExpressionNode createXML() {
+        XMLNode xml = new XMLNode();
+        xml.xml = current_node.token;
+        return xml;
+    }
+
+    private ExpressionNode createBooleanExpression() {
         ExpressionNode expr = createEquality();
         while (nextTokenEquals(TokenType.BOOLEAN_OPERATOR)) {
             BinOppNode binOppNode = new BinOppNode();

@@ -16,32 +16,65 @@ public class CLTokenizer implements Tokenizer {
         String current_token = "";
         String code = un_code.concat(" ");
         boolean parsing_string = false;
+        boolean parsing_xml = false;
+        boolean multiline_comment = false;
         for (char c : code.toCharArray()) {
-            if (parsing_string) {
-                if (c == '"') {
-                    parsing_string = false;
+            if (current_token.equals("/*")) {
+                multiline_comment = true;
+                current_token = "";
+            }
+            if(multiline_comment) {
+                if (c == '*' && !current_token.equals("*")) {
                     current_token += c;
-                    list = insertToken(list, TokenType.STRING, current_token);
+                }
+                if (c == '/') {
+                    current_token += c;
+                }
+                if (current_token.equals("*/")) {
                     current_token = "";
+                    multiline_comment = false;
+                }
+            } else {
+                if (current_token.equals("//")) 
+                    break;
+                if (parsing_string) {
+                    if (c == '"') {
+                        parsing_string = false;
+                        current_token += c;
+                        list = insertToken(list, TokenType.STRING, current_token);
+                        current_token = "";
+                    } else {
+                        current_token += c;
+                    }
+                } else if (parsing_xml) {
+                        if (c == '$') {
+                            parsing_xml = false;
+                            current_token += c;
+                            list = insertToken(list, TokenType.XML, current_token);
+                            current_token = "";
+                        } else {
+                            current_token += c;
+                        }
+                } else if (c == ' ') {
+                    if (current_token.length() > 0) {
+                        list = insertToken(list, current_token);
+                        current_token = "";
+                    }
+                } else if (c == ',' || c == '[' || c == ']' || c == '.' || c == '(' || c == ')') {
+                    if (current_token.length() > 0) {
+                        list = insertToken(list, current_token);
+                    }
+                    list = insertToken(list, "" + c);
+                    current_token = "";
+                } else if (c == '"') {
+                    parsing_string = true;
+                    current_token += c;
+                } else if (c == '$') {
+                    parsing_xml = true;
+                    current_token += c;
                 } else {
                     current_token += c;
                 }
-            } else if (c == ' ') {
-                if (current_token.length() > 0) {
-                    list = insertToken(list, current_token);
-                    current_token = "";
-                }
-            } else if (c == ',' || c == '[' || c == ']' || c == '.' || c == '(' || c == ')') {
-                if (current_token.length() > 0) {
-                    list = insertToken(list, current_token);
-                }
-                list = insertToken(list, "" + c);
-                current_token = "";
-            } else if (c == '"') {
-                parsing_string = true;
-                current_token += c;
-            } else {
-                current_token += c;
             }
         }
         return list;

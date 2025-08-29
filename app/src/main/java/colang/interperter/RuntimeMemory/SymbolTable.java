@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import colang.interperter.LangObject.ClassDefinition;
+import colang.interperter.LangObject.ComponentDefinition;
 import colang.interperter.LangObject.LangObject;
 import colang.interperter.RunContext.ClassMethodContext;
 import colang.interperter.RunContext.Context;
@@ -24,9 +25,11 @@ class Frame {
     }
 }
 
+
 public class SymbolTable {
-    public static HashMap<String, FunNode> fun_map = new HashMap<String, FunNode>();
-    public static HashMap<String, ClassDefinition> class_defs = new HashMap<String, ClassDefinition>();
+    private static HashMap<String, FunNode> fun_map = new HashMap<String, FunNode>();
+    private static HashMap<String, ClassDefinition> class_defs = new HashMap<String, ClassDefinition>();
+    private static HashMap<String, ComponentDefinition> component_defs = new HashMap<String, ComponentDefinition>();
     private static Deque<Frame> frames = new ArrayDeque<Frame>();
 
     private static final SymbolTable instance = new SymbolTable();
@@ -39,12 +42,23 @@ public class SymbolTable {
         return instance;
     }
 
-    public HashMap<String, FunNode> getFunctions() {
-        return fun_map;
+    public FunNode getFunctionByName(String name) {
+        if(getVariable(name) != null) {
+
+        }
+        return fun_map.get(name);
+    }
+
+    public FunNode createFunction(String name, FunNode value) {
+        return fun_map.put(name, value);
     }
 
     public HashMap<String, ClassDefinition> getClassDefinitions() {
         return class_defs;
+    }
+
+    public HashMap<String, ComponentDefinition> getComponents() {
+        return component_defs;
     }
 
     public void enterScope() {

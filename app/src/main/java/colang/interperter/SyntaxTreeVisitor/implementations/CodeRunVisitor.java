@@ -2,10 +2,16 @@ package colang.interperter.SyntaxTreeVisitor.implementations;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.logging.Logger;
 
 import colang.interperter.LangObject.ClassDefinition;
+import colang.interperter.LangObject.ComponentDefinition;
+import colang.interperter.LangObject.DOMElement;
 import colang.interperter.LangObject.LangObject;
+import colang.interperter.LangObject.Property;
 import colang.interperter.LangObject.implementations.ArrayObject;
+import colang.interperter.LangObject.implementations.DOMObject;
 import colang.interperter.LangObject.implementations.VoidObject;
 import colang.interperter.RunContext.ClassMethodContext;
 import colang.interperter.RunContext.Context;
@@ -14,7 +20,7 @@ import colang.interperter.RuntimeMemory.SymbolTable;
 import colang.interperter.SyntaxTree.SyntaxTreeNode.implementations.CLNodes.*;
 import colang.interperter.SyntaxTreeVisitor.SyntaxTreeVisitor;
 import colang.interperter.Type.CLType;
-import colang.logging.Logger;
+import colang.webserver.HTMLBuilder;
 
 public class CodeRunVisitor implements SyntaxTreeVisitor {
 
@@ -28,7 +34,7 @@ public class CodeRunVisitor implements SyntaxTreeVisitor {
     @Override
     public void visit(AssignNode assignNode) {
         assignNode.value_expression.accept(this);
-        if(assignNode.identifier.next == null) {
+        if (assignNode.identifier.next == null) {
             SymbolTable.getInstance().putVariable(assignNode.identifier.initial.id, assignNode.value_expression.calculate());
         } else {
             PropertyAccessNode property = (PropertyAccessNode) assignNode.identifier.next;
@@ -38,15 +44,37 @@ public class CodeRunVisitor implements SyntaxTreeVisitor {
         }
     }
 
+    public void traverse(DOMElement root, int level) {
+        if (root == null) {
+            return;
+        }
+        String spaces = String.format("%"+level+"s", "");
+        String properties = "";
+        for(Property prop : root.attributes) {
+            properties += " " + prop.name + "=\"" + prop.value + "\"";
+        }
+        HTMLBuilder.getInstance().write(spaces + "<" + root.tagName + "" + properties + ">");
+        if(root.textValue != null) {
+            HTMLBuilder.getInstance().write(spaces + root.textValue);
+        }
+        for(DOMElement child : root.children) {
+            traverse(child, level + 1);
+        }
+        HTMLBuilder.getInstance().write(spaces + "</" + root.tagName + ">");
+    }
+
     @Override
     public void visit(PrintNode printNode) {
         printNode.print_expression.accept(this);
         LangObject object = printNode.print_expression.calculate();
-        if(object.type == CLType.ARRAY) {
+        if (object.type == CLType.DOM) {
+            DOMObject dom = (DOMObject) object;
+            traverse(dom.dom.root, 1);
+        } else if (object.type == CLType.ARRAY) {
             List<LangObject> expressions = (List<LangObject>) object.value;
             String out = "[";
             int indx = 0;
-            for(LangObject expression : expressions) {
+            for (LangObject expression : expressions) {
                 indx++;
                 out += expression.value;
                 if(indx != expressions.size()) {
@@ -54,9 +82,13 @@ public class CodeRunVisitor implements SyntaxTreeVisitor {
                 }
             }
             out += "]";
-            Logger.logOutput(out);
-        } else if(object.type != CLType.VOID) {
-            Logger.logOutput(printNode.print_expression.calculate().value);
+            Logger logger = Logger.getLogger(this.getClass().getName());
+            logger.config(out);
+        } else if (object.type != CLType.VOID) {
+            Logger logger = Logger.getLogger(this.getClass().getName());
+            Object value = printNode.print_expression.calculate().value;
+            logger.fine("dd" + value.toString());
+            colang.logging.Logger.logOutput(value.toString());
         }
     }
 
@@ -93,15 +125,13 @@ public class CodeRunVisitor implements SyntaxTreeVisitor {
 
     @Override
     public void visit(FunNode funNode) {
-        SymbolTable.getInstance()
-            .getFunctions()
-            .put(funNode.id, funNode);
+        SymbolTable.getInstance().createFunction(funNode.id, funNode);
     } 
 
     @Override
     public void visit(FunCallNode funCallNode) {
         int ind = 0;
-        FunNode funNode = SymbolTable.getInstance().getFunctions().get(funCallNode.id);
+        FunNode funNode = SymbolTable.getInstance().getFunctionByName(funCallNode.id);
         for (ExpressionNode expr : funCallNode.values) {
             SymbolTable.getInstance().putVariable(
                 funNode.parameter_ids.get(ind),
@@ -120,9 +150,9 @@ public class CodeRunVisitor implements SyntaxTreeVisitor {
                 statement.accept(this);
             }
         }
-        if(funCallNode.return_value == null) {
+        if (funCallNode.return_value == null) {
             funCallNode.return_value = new VoidObject(CLType.VOID, null);
-            if(ContextManager.getContextType() == Context.CLASS_METHOD) {
+            if (ContextManager.getContextType() == Context.CLASS_METHOD) {
                 ClassMethodContext context = (ClassMethodContext) ContextManager.getContext();
                 context.return_value = new VoidObject(CLType.VOID, null);
             }
@@ -139,6 +169,10 @@ public class CodeRunVisitor implements SyntaxTreeVisitor {
             BinOppNode binOppNode = (BinOppNode) expressionNode;
             binOppNode.left.accept(this);
             binOppNode.right.accept(this);
+        }        
+        if (expressionNode instanceof LamdaNode) {
+            LamdaNode lamdaNode = (LamdaNode) expressionNode;
+            lamdaNode.accept(this);
         }
         return expressionNode;
     }
@@ -175,7 +209,7 @@ public class CodeRunVisitor implements SyntaxTreeVisitor {
 
     @Override
     public void visit(ReturnStatement returnStatement) {
-        if(ContextManager.getContextType() == Context.CLASS_METHOD) {
+        if (ContextManager.getContextType() == Context.CLASS_METHOD) {
             ClassMethodContext context = (ClassMethodContext) ContextManager.getContext();
             context.return_value = returnStatement.return_value.calculate();
         }
@@ -187,4 +221,17 @@ public class CodeRunVisitor implements SyntaxTreeVisitor {
         
     }
 
+    @Override
+    public void visit(ComponentDefinitionNode componentDefinitionNode) {
+        ComponentDefinition def = new ComponentDefinition();
+        def.xml = componentDefinitionNode.xml;
+        def.componentName = componentDefinitionNode.className;
+        componentDefinitionNode.functions.forEach(function -> {
+            def.functions.put(function.id, function);
+        });
+        def.assignments = componentDefinitionNode.variables;
+        SymbolTable.getInstance().getComponents().put(def.componentName, def);
+    }
+
+    
 }

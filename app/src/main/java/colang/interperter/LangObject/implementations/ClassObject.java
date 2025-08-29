@@ -21,6 +21,7 @@ import colang.interperter.Type.CLType;
 
 public class ClassObject extends LangObject {
 
+    ClassObject pClassObject;
     ClassDefinition definition;
 
     public ClassObject(CLType type, Object value) {
