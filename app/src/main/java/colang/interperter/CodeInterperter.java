@@ -17,6 +17,16 @@ public class CodeInterperter {
         this.treeGenerator = treeGenerator;
     }
 
+    public CodeInterperter(SyntaxTreeGenerator treeGenerator) {
+        this.treeGenerator = treeGenerator;
+    }
+
+    public SyntaxTree interpertTree(String code, CodeExcecutor excecutor) {
+        syntax_tree = treeGenerator.createTree(code);
+        excecutor.execute(syntax_tree);
+        return syntax_tree;
+    }
+
     public void interpert(String code) {
         syntax_tree = treeGenerator.createTree(code);
         optimizer.optimize(syntax_tree);

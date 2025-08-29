@@ -15,8 +15,9 @@ import colang.logging.Logger;
 public class App {
 
     private static final  boolean DEBUG_MODE = true;
-
-    public static void main(String[] args) {
+                                 
+    public static void main(String args[])
+    {
         Scanner sc = new Scanner(System.in);
         SyntaxTreeGenerator treeGenerator = new CLSyntaxTreeGenerator();
         CodeOptimzer optimizer = new CLCodeOptimizer();

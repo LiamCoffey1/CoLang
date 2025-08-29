@@ -1,16 +1,47 @@
 package colang.interperter.SyntaxTree.SyntaxTreeNode.implementations;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.text.html.HTMLDocument.Iterator;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.Characters;
+import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
+
+import org.checkerframework.checker.units.qual.A;
+import org.xml.sax.XMLReader;
+
+import colang.interperter.CodeInterperter;
+import colang.interperter.CodeExcecutor.CodeExcecutor;
+import colang.interperter.CodeExcecutor.implementations.CLCodeExecutor;
+import colang.interperter.CodeOptimizer.CodeOptimzer;
+import colang.interperter.CodeOptimizer.implementations.CLCodeOptimizer;
 import colang.interperter.Exception.implementations.VariableNotFoundException;
+import colang.interperter.LangObject.ComponentDefinition;
+import colang.interperter.LangObject.DOM;
+import colang.interperter.LangObject.DOMElement;
 import colang.interperter.LangObject.LangObject;
+import colang.interperter.LangObject.Property;
 import colang.interperter.LangObject.implementations.ArrayObject;
 import colang.interperter.LangObject.implementations.ClassObject;
+import colang.interperter.LangObject.implementations.DOMObject;
+import colang.interperter.LangObject.implementations.FunctionObject;
 import colang.interperter.LangObject.implementations.StringObject;
 import colang.interperter.Operator.BinaryOperations;
+import colang.interperter.RunContext.ContextManager;
 import colang.interperter.RuntimeMemory.SymbolTable;
+import colang.interperter.SyntaxTree.SyntaxTree;
 import colang.interperter.SyntaxTree.SyntaxTreeNode.SyntaxTreeNode;
+import colang.interperter.SyntaxTreeGenerator.SyntaxTreeGenerator;
+import colang.interperter.SyntaxTreeGenerator.implementations.CLSyntaxTreeGenerator;
 import colang.interperter.SyntaxTreeVisitor.SyntaxTreeVisitor;
 import colang.interperter.Type.CLType;
 
@@ -28,6 +59,17 @@ public class CLNodes {
         public FunNode constructor;
         public ArrayList<FunNode> functions = new ArrayList<FunNode>();
         public ArrayList<VariableDeclarationNode> variables = new ArrayList<VariableDeclarationNode>();
+
+        public void accept(SyntaxTreeVisitor v) {
+            v.visit(this);
+        }
+    }
+
+    public static class ComponentDefinitionNode extends StatementNode {
+        public String className;
+        public ArrayList<FunNode> functions = new ArrayList<FunNode>();
+        public ArrayList<VariableDeclarationNode> variables = new ArrayList<VariableDeclarationNode>();
+        public String xml;
 
         public void accept(SyntaxTreeVisitor v) {
             v.visit(this);
@@ -311,6 +353,157 @@ public class CLNodes {
             if (val == null) {
                 throw new VariableNotFoundException("Invalid var: " + id);
             }
+            return val;
+        }
+    }
+
+    private static void replaceTokens(DOMElement root, String input) {
+        String new_string = "";
+        boolean parsing_token = false;
+        String token_name = "";
+        for(char c : input.toCharArray()) {
+            if(c == '{') {
+                parsing_token = true;
+            } else if(c == '}') {
+                parsing_token = false;
+                SyntaxTreeGenerator treeGenerator = new CLSyntaxTreeGenerator();
+                CodeInterperter interperter = new CodeInterperter(treeGenerator);
+                CodeExcecutor excecutor = new CLCodeExecutor();
+                SyntaxTree tree = interperter.interpertTree(token_name, excecutor);
+                BlockNode expressionNode = (BlockNode) tree.root;
+                ExpressionStatement expressionStatement = (ExpressionStatement) expressionNode.children.get(0);
+                LangObject object = expressionStatement.expression.calculate();
+                if(object instanceof DOMObject) {
+                    DOMObject dom = (DOMObject)object;
+                    root.children.add(dom.dom.root);
+                } else {
+                    root.textValue = object.value.toString();
+                }
+                token_name = "";
+            } else if(parsing_token) {
+                token_name += c;
+            } else {
+                new_string += c;
+            }
+        }
+    }
+
+    private static String replaceTokens(String input) {
+        String new_string = "";
+        boolean parsing_token = false;
+        String token_name = "";
+        for(char c : input.toCharArray()) {
+            if(c == '{') {
+                parsing_token = true;
+            } else if(c == '}') {
+                parsing_token = false;
+                SyntaxTreeGenerator treeGenerator = new CLSyntaxTreeGenerator();
+                CodeInterperter interperter = new CodeInterperter(treeGenerator);
+                CodeExcecutor excecutor = new CLCodeExecutor();
+                SyntaxTree tree = interperter.interpertTree(token_name, excecutor);
+                BlockNode expressionNode = (BlockNode) tree.root;
+                ExpressionStatement expressionStatement = (ExpressionStatement) expressionNode.children.get(0);
+                LangObject object = expressionStatement.expression.calculate();
+                new_string += object.value.toString();
+                token_name = "";
+            } else if(parsing_token) {
+                token_name += c;
+            } else {
+                new_string += c;
+            }
+        }
+        return new_string;
+    }
+    public static DOMElement getTree(XMLEventReader reader, DOMElement rooElement) {
+        if(!reader.hasNext()) {
+            return rooElement;
+        } else {
+            try {
+            XMLEvent nextEvent = reader.nextEvent();
+            DOMElement cur_element = new DOMElement();
+                if (nextEvent.isStartElement()) {
+                    StartElement startElement = nextEvent.asStartElement();
+                    if(startElement.getName().getLocalPart().startsWith("c-")) {
+                        ComponentDefinition def = SymbolTable.getInstance().getComponents().get(
+                            startElement.getName().getLocalPart().replace("c-", ""));
+                        Reader sreader = new StringReader(def.xml.substring(1, def.xml.length() - 1));
+                        XMLInputFactory factory = XMLInputFactory.newInstance();
+                        try {
+                            XMLEventReader sub_reader = factory.createXMLEventReader(sreader);
+                            SymbolTable.getInstance().enterScope();
+                            java.util.Iterator<Attribute> it = startElement.getAttributes();
+                            while(it.hasNext()) {
+                                Attribute attribute = it.next();
+                                SymbolTable.getInstance().putVariable(
+                                    attribute.getName().getLocalPart(),
+                                     new LangObject(null, replaceTokens(attribute.getValue()))
+                                     );
+                                
+                            }
+                            rooElement = getTree(sub_reader, rooElement);
+                            SymbolTable.getInstance().exitScope();
+                        } catch (XMLStreamException e) {
+                            e.printStackTrace();
+                        }
+                    } else{
+                        cur_element = new DOMElement();
+                        cur_element.tagName = startElement.getName().getLocalPart();
+                        cur_element.parent = rooElement;
+                        rooElement.children.add(cur_element);
+                        rooElement.parent = rooElement;
+                        rooElement = rooElement.children.get(rooElement.children.size() - 1);
+                        java.util.Iterator<Attribute> it = startElement.getAttributes();
+                        while(it.hasNext()) {
+                            Attribute attribute = it.next();
+                            rooElement.attributes.add(new Property(attribute.getName().toString(), replaceTokens(attribute.getValue())));
+                        }
+                    }
+                }
+                if (nextEvent.isCharacters()) {
+                    Characters startElement = nextEvent.asCharacters();
+                    replaceTokens(rooElement, startElement.getData());
+                }
+                if (nextEvent.isEndElement()) {
+                    if(!nextEvent.asEndElement().getName().getLocalPart().startsWith("c-") && rooElement.parent != null) {
+                        rooElement = rooElement.parent;
+                    }
+                }
+            } catch (XMLStreamException e) {
+                e.printStackTrace();
+                return null;
+            }
+            return getTree(reader, rooElement);
+        }
+    }
+
+    public static class XMLNode extends ExpressionNode {
+        public String xml;
+        @Override
+        public LangObject calculate() {
+            String text = xml.substring(1, xml.length() - 1);
+            Reader sreader = new StringReader(text);
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            DOM dom = new DOM();
+            DOMElement rooElement = new DOMElement();
+            rooElement.tagName = "root";
+            try {
+                XMLEventReader reader = factory.createXMLEventReader(sreader);
+                getTree(reader, rooElement);     
+            } catch (XMLStreamException e) {
+                e.printStackTrace();
+            }
+            dom.root = rooElement;
+            return new DOMObject(CLType.DOM, dom);
+        }
+    }
+
+    public static class LamdaNode extends ExpressionNode {
+        public BlockNode body;
+        List<String> parameters = new ArrayList<String>();
+
+        @Override
+        public LangObject calculate() {
+            FunctionObject val = new FunctionObject(null, type, body);
             return val;
         }
     }

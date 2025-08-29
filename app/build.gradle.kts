@@ -22,11 +22,23 @@ dependencies {
 
     // This dependency is used by the application.
     implementation("com.google.guava:guava:30.1.1-jre")
+    // https://mvnrepository.com/artifact/io.netty/netty-all
+    // https://mvnrepository.com/artifact/io.netty/netty-all
+    implementation("io.netty:netty-all:4.1.24.Final")
+
+
 }
 
 application {
     // Define the main class for the application.
     mainClass.set("colang.App")
+
+    // Provide a default web root for development runs. Can be overridden by:
+    //   -Pcolang.webroot=... (project property), or environment COLANG_WEBROOT, or JVM arg -Dcolang.webroot=...
+    val defaultWebRoot = (findProperty("colang.webroot") as String?)
+        ?: System.getenv("COLANG_WEBROOT")
+        ?: layout.projectDirectory.dir("dist").asFile.absolutePath
+    applicationDefaultJvmArgs = listOf("-Dcolang.webroot=$defaultWebRoot")
 }
 
 tasks.named<Test>("test") {

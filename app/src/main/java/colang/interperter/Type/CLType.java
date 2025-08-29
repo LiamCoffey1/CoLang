@@ -6,6 +6,7 @@ public enum CLType {
     NUMBER,
     ARRAY,
     VOID,
+    DOM,
     INSTANCE,
     NULL
 }

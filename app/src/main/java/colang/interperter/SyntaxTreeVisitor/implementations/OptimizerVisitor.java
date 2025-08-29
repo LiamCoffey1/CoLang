@@ -80,4 +80,8 @@ public class OptimizerVisitor implements SyntaxTreeVisitor {
     public void visit(VariableDeclarationNode variableDeclarationNode) {
         
     }
+
+    @Override
+    public void visit(ComponentDefinitionNode classDefinitionNode) {
+    }
 }
